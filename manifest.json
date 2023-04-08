@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "ChatGPT Form",
+  "description": "Experiment lol.",
+  "author": "liuliuweb@gmail.com",
+  "version": "0.1",
+  "icons": {
+    "128": "icon-128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://chat.openai.com/chat/*"],
+      "js": ["form.js"],
+      "css": ["styles.css"]
+    }
+  ]
+}
