@@ -1,93 +1,88 @@
-const textarea = document.querySelector("textarea");
-const wrapper = document.querySelector("form");
+const textArea = document.querySelector("textarea");
+const baseWrapper = document.querySelector("form");
 
 function addTrigger() {
-  textarea.addEventListener("keydown", function (event) {
+  textArea.addEventListener("keydown", (event) => {
     if (event.key === "/") {
-      showMenu();
+      addMenu();
     }
   });
 }
 
-function showMenu() {
-  const dropdownMenu = createElement("div", {}, ["dropdown"], "");
-  wrapper.appendChild(dropdownMenu);
+function addMenu() {
+  const dropdownMenu = createElement("div", { className: "dropdown_f4g" }); // f4g = Form4GPT
+  baseWrapper.appendChild(dropdownMenu);
 
-  const summarizeOption = createElement("div", {}, ["option"], "Summarize", {
-    callback: function () {
-      summaryForm();
-      dropdownMenu.remove();
-    },
+  // TODO: explain
+  const explainOption = createElement("div", {
+    className: "option_f4g",
+    textContent: "Explain",
+  });
+  dropdownMenu.appendChild(explainOption);
+
+  // TODO: recoomend
+  const recommendOption = createElement("div", {
+    className: "option_f4g",
+    textContent: "Recommend",
+  });
+  dropdownMenu.appendChild(recommendOption);
+
+  // Summarize
+  const summarizeOption = createElement("div", {
+    className: "option_f4g",
+    textContent: "Summarize",
+  });
+  summarizeOption.addEventListener("click", () => {
+    summaryForm();
+    dropdownMenu.remove();
   });
 
   dropdownMenu.appendChild(summarizeOption);
 }
 
 function summaryForm() {
-  //add form container
-  const formUI = createElement("div", {}, ["formUI"]);
-  wrapper.appendChild(formUI);
-  const response = [];
+  const customForm = createElement("div", { className: "customForm_f4g" });
+  baseWrapper.appendChild(customForm);
 
-  // add input fields
-  const inputs = ["Topic", "Length"];
-  inputs.forEach(function (input) {
-    const inputLabelGroup = createElement("div", {}, ["inputLabelGroup"]);
-
-    // add label
-    const label = createElement(
-      "label",
-      { type: "label" },
-      ["label"],
-      [input] // html
-    );
-    inputLabelGroup.appendChild(label);
-
-    // add input
-    const inputElement = createElement(
-      "input",
-      { type: "input", placeholder: input },
-      [input, "input"] // classes
-    );
-    inputLabelGroup.appendChild(inputElement);
-
-    formUI.appendChild(inputLabelGroup);
+  const inputs = ["Topic", "Length", "Audience"];
+  inputs.forEach((input) => {
+    const inputLabelGroup = createElement("div", {
+      className: "inputLabelGroup_f4g",
+    });
+    const label = createElement("label", {
+      className: "label_f4g",
+      textContent: input,
+    });
+    const field = createElement("input", {
+      className: `${input} input_f4g`,
+      //   type: "text",
+      //   placeholder: input,
+    });
+    inputLabelGroup.append(label, field);
+    customForm.appendChild(inputLabelGroup);
   });
 
-  //add submit button
-  const submitBtn = createElement("a", {}, ["submit"], "Submit", {
-    callback: function () {
-      const responses = document.querySelectorAll(".input");
-      responses.forEach(function (response) {
-        console.log(response.value);
-      });
-
-      textarea.value = "lol " + responses[0].value + " " + responses[1].value;
-      wrapper.querySelector("button").click();
-    },
+  const submitBtn = createElement("a", {
+    className: "submit_f4g",
+    textContent: "Submit",
   });
-  formUI.appendChild(submitBtn);
+  submitBtn.addEventListener("click", () => {
+    const responses = document.querySelectorAll(".input_f4g");
+    textArea.value = `Summarize ${responses[0].value}. Limit the length to ${responses[1].value}. The audience is ${responses[2].value}. `;
+    baseWrapper.querySelector("button").click();
+    customForm.remove();
+  });
+  customForm.appendChild(submitBtn);
 }
 
-function createElement(
-  tag,
-  attributes,
-  classes = [],
-  innerHTML = "",
-  listener
-) {
+function createElement(tag, attrs = {}, classes = [], content = "") {
   const element = document.createElement(tag);
-  for (const [key, value] of Object.entries(attributes)) {
+  Object.entries(attrs).forEach(([key, value]) => {
     element[key] = value;
-  }
-  for (const classname of classes) {
-    element.classList.add(classname);
-  }
-  if (innerHTML) {
-    element.innerHTML = innerHTML;
-  }
-  if (listener) {
-    element.addEventListener("click", listener.callback);
+  });
+  element.classList.add(...classes);
+  if (content) {
+    element.textContent = content;
   }
   return element;
 }
