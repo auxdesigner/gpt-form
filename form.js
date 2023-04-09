@@ -1,88 +1,95 @@
 const textarea = document.querySelector("textarea");
-const form = document.querySelector("form");
+const wrapper = document.querySelector("form");
 
-function injectUI() {
+function addTrigger() {
   textarea.addEventListener("keydown", function (event) {
     if (event.key === "/") {
-      console.log(event.key); // "/"
       showMenu();
     }
   });
 }
 
 function showMenu() {
-  console.log("menu shown");
-  const dropdownMenu = createElement("div", ["dropdown"], "");
-  form.appendChild(dropdownMenu);
+  const dropdownMenu = createElement("div", {}, ["dropdown"], "");
+  wrapper.appendChild(dropdownMenu);
 
-  const optionFunctions = {
-    Summarize: function () {
-      console.log("func sum");
-    },
-    Explain: function () {
-      console.log("func explain");
-    },
-  };
-
-  const optionNames = Object.keys(optionFunctions);
-
-  optionNames.forEach(function (optionName) {
-    const option = createElement("div", ["option"], optionName);
-
-    option.addEventListener("click", function () {
-      optionFunctions[optionName]();
+  const summarizeOption = createElement("div", {}, ["option"], "Summarize", {
+    callback: function () {
+      summaryForm();
       dropdownMenu.remove();
-    });
-
-    dropdownMenu.appendChild(option);
+    },
   });
 
-  //   const summarizeOption = createElement("div", ["option"], "Summarize");
-  //   const explainOption = createElement("div", ["option"], "Explain");
-
-  //   summarizeOption.addEventListener("click", function () {
-  //     console.log("func sum");
-  //     dropdownMenu.remove();
-  //   });
-
-  //   explainOption.addEventListener("click", function () {
-  //     console.log("func explain");
-  //     dropdownMenu.remove();
-  //   });
-
-  //   dropdownMenu.appendChild(summarizeOption);
-  //   dropdownMenu.appendChild(explainOption);
+  dropdownMenu.appendChild(summarizeOption);
 }
 
 function summaryForm() {
-  console.log("summary form shown");
-  // show UI for summary form
-  // div form field
-  // div wrapper
-  // div submit btn
+  //add form container
+  const formUI = createElement("div", {}, ["formUI"]);
+  wrapper.appendChild(formUI);
+  const response = [];
 
-  // on submit click call writeQuery
+  // add input fields
+  const inputs = ["Topic", "Length"];
+  inputs.forEach(function (input) {
+    const inputLabelGroup = createElement("div", {}, ["inputLabelGroup"]);
+
+    // add label
+    const label = createElement(
+      "label",
+      { type: "label" },
+      ["label"],
+      [input] // html
+    );
+    inputLabelGroup.appendChild(label);
+
+    // add input
+    const inputElement = createElement(
+      "input",
+      { type: "input", placeholder: input },
+      [input, "input"] // classes
+    );
+    inputLabelGroup.appendChild(inputElement);
+
+    formUI.appendChild(inputLabelGroup);
+  });
+
+  //add submit button
+  const submitBtn = createElement("a", {}, ["submit"], "Submit", {
+    callback: function () {
+      const responses = document.querySelectorAll(".input");
+      responses.forEach(function (response) {
+        console.log(response.value);
+      });
+
+      textarea.value = "lol " + responses[0].value + " " + responses[1].value;
+      wrapper.querySelector("button").click();
+    },
+  });
+  formUI.appendChild(submitBtn);
 }
 
-function writeQuery() {
-  textarea.value = "lol";
-  // take value from summary Form
-}
-
-createElement("div");
-
-function createElement(tag, classes = [], innerHTML = "") {
+function createElement(
+  tag,
+  attributes,
+  classes = [],
+  innerHTML = "",
+  listener
+) {
   const element = document.createElement(tag);
-  //   for (const [key, value] of Object.entries(attributes)) {
-  //     element[key] = value;
-  //   }
+  for (const [key, value] of Object.entries(attributes)) {
+    element[key] = value;
+  }
   for (const classname of classes) {
     element.classList.add(classname);
   }
   if (innerHTML) {
     element.innerHTML = innerHTML;
   }
+  if (listener) {
+    element.addEventListener("click", listener.callback);
+  }
   return element;
 }
 
-injectUI();
+addTrigger();
